@@ -321,7 +321,6 @@ Item {
       MouseArea { anchors.fill: parent; onClicked: input.forceActiveFocus() }
 
       Column {
-        id: content
         anchors.fill: parent
         anchors.topMargin: card.contentTopInset
         anchors.rightMargin: card.contentRightInset
@@ -397,7 +396,6 @@ Item {
         }
 
         Item {
-          id: body
           width: parent.width
           height: root.bodyHeight
           visible: root.expanded
