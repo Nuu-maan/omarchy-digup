@@ -180,16 +180,27 @@ function escapeHtml(text) {
   return String(text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 }
 
+var STOPWORDS = ["the", "and", "about", "where", "they", "them", "their", "what", "when", "which", "with",
+  "that", "this", "from", "for", "are", "was", "were", "has", "have", "into", "over", "some", "talk", "one"]
+
 function queryWords(q) {
-  return String(q || "").toLowerCase().split(/[\s.,;:!?'"()[\]{}<>\/\\|`~@#$%^&*+=-]+/).filter(function(w) { return w.length > 2 })
+  return String(q || "").toLowerCase().split(/[\s.,;:!?'"()[\]{}<>\/\\|`~@#$%^&*+=-]+/).filter(function(w) {
+    return w.length > 2 && STOPWORDS.indexOf(w) === -1
+  })
 }
 
 function highlight(text, q, color) {
   var html = escapeHtml(text)
   var words = queryWords(q)
   if (words.length === 0) return html
-  var pattern = new RegExp("(" + words.map(function(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") }).join("|") + ")", "gi")
-  return html.replace(pattern, "<span style=\"background-color:" + color + "\">$1</span>")
+  var pattern = new RegExp("(^|[^\\w\u00c0-\uffff])(" + words.map(function(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") }).join("|") + ")", "gi")
+  return html.replace(pattern, "$1<span style=\"background-color:" + color + "\">$2</span>")
+}
+
+function previewHtml(text, q, color, code) {
+  var html = highlight(text, q, color)
+  if (code) return "<pre>" + html + "</pre>"
+  return html.replace(/\n/g, "<br>")
 }
 
 function excerptHtml(excerpt, color) {
@@ -237,7 +248,7 @@ if (typeof module !== "undefined") {
     GLYPHS: GLYPHS, parseQuery: parseQuery, formatTime: formatTime, formatCount: formatCount,
     formatSize: formatSize, formatDate: formatDate, fileName: fileName, folderOf: folderOf,
     locLabel: locLabel, reason: reason, metaLine: metaLine, renderKind: renderKind, renderLoc: renderLoc,
-    openLoc: openLoc, groupHits: groupHits, escapeHtml: escapeHtml, highlight: highlight, excerptHtml: excerptHtml,
+    openLoc: openLoc, groupHits: groupHits, escapeHtml: escapeHtml, highlight: highlight, previewHtml: previewHtml, excerptHtml: excerptHtml,
     statusText: statusText, expandHome: expandHome, readConfig: readConfig, localPath: localPath
   }
 }

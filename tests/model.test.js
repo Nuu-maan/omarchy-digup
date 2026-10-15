@@ -67,6 +67,17 @@ test("highlight escapes html and marks query words", () => {
   assert.ok(html.includes(">clause</span>"))
 })
 
+test("highlight skips filler words and matches from the start of words", () => {
+  const html = M.highlight("Sleep: They fall asleep, sleep well", "where they talk about sleep", "#f")
+  assert.strictEqual(html, "<span style=\"background-color:#f\">Sleep</span>: They fall asleep, <span style=\"background-color:#f\">sleep</span> well")
+})
+
+test("previewHtml keeps line breaks, and code keeps its spacing", () => {
+  assert.strictEqual(M.previewHtml("a\nb", "", "#ff0", false), "a<br>b")
+  assert.strictEqual(M.previewHtml("  if x:\n    retry()", "retry", "#ff0", true),
+    "<pre>  if x:\n    <span style=\"background-color:#ff0\">retry</span>()</pre>")
+})
+
 test("excerptHtml turns DigUp's «marks» into highlights", () => {
   assert.strictEqual(M.excerptHtml("…not «pets» under <this>", "#ff0"), "…not <span style=\"background-color:#ff0\">pets</span> under &lt;this&gt;")
 })
