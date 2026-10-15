@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for candidate in "${DIGUP_HELPER:-}" "$HOME/.local/share/digup/helper/digup" /usr/lib/DigUp/helper/digup; do
+  [[ -n $candidate && -x $candidate ]] && exec "$candidate" "$@"
+done
+
+echo "DigUp's engine isn't installed. Run $(dirname "$0")/install-helper" >&2
+exit 127

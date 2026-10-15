@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.nuu-maan.digup",
+  "name": "DigUp",
+  "version": "0.1.0",
+  "author": "nuu-maan",
+  "license": "MIT",
+  "description": "Search your files by what's in them: photos, PDFs, recordings, videos and code. Runs DigUp's EmbeddingGemma 2 search on your machine.",
+  "kinds": ["service", "overlay"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "overlay": "Search.qml"
+  }
+}

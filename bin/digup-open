@@ -1,0 +1,62 @@
+#!/bin/bash
+set -euo pipefail
+
+action=$1 path=$2 kind=${3:-} loc=${4:-0}
+
+launch() {
+  if command -v uwsm-app >/dev/null; then exec uwsm-app -- "$@"; else exec "$@"; fi
+}
+
+file_url() {
+  local LC_ALL=C out="file://" i c
+  for ((i = 0; i < ${#1}; i++)); do
+    c=${1:i:1}
+    case $c in [a-zA-Z0-9/._~-]) out+=$c ;; *) printf -v c '%%%02X' "'$c"; out+=$c ;; esac
+  done
+  echo "$out"
+}
+
+open_pdf() {
+  ((loc > 0)) || launch xdg-open "$path"
+  case $(xdg-mime query default application/pdf) in
+  *Evince*) launch evince --page-index="$loc" "$path" ;;
+  *Papers*) launch papers --page-index="$loc" "$path" ;;
+  *zathura*) launch zathura --page="$loc" "$path" ;;
+  *okular*) launch okular --page "$loc" "$path" ;;
+  *) launch xdg-open "$path" ;;
+  esac
+}
+
+open_media() {
+  command -v mpv >/dev/null || launch xdg-open "$path"
+  launch mpv --force-window=immediate --start="$loc" "$path"
+}
+
+open_code() {
+  local editor
+  editor=$(omarchy-default-editor 2>/dev/null || echo nvim)
+  case ${editor##*/} in
+  code | cursor | codium) exec omarchy-launch-editor --goto "$path:$loc" ;;
+  zed | hx | helix | subl | sublime_text) exec omarchy-launch-editor "$path:$loc" ;;
+  *) exec omarchy-launch-editor "+$loc" "$path" ;;
+  esac
+}
+
+case $action in
+open)
+  case $kind in
+  pdf) open_pdf ;;
+  audio | video) open_media ;;
+  code) open_code ;;
+  *) launch xdg-open "$path" ;;
+  esac
+  ;;
+reveal)
+  dbus-send --session --type=method_call --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 \
+    org.freedesktop.FileManager1.ShowItems array:string:"$(file_url "$path")" string:"" ||
+    launch xdg-open "$(dirname "$path")"
+  ;;
+copy)
+  file_url "$path" | wl-copy --type text/uri-list
+  ;;
+esac
