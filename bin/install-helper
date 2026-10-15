@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+
+version=0.7.0-beta.1
+url="https://github.com/ARahim3/DigUp/releases/download/v$version/DigUp_${version}_amd64.AppImage"
+target="$HOME/.local/share/digup/helper"
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+echo "Downloading DigUp $version"
+curl -fL --progress-bar -o "$work/DigUp.AppImage" "$url"
+chmod +x "$work/DigUp.AppImage"
+(cd "$work" && ./DigUp.AppImage --appimage-extract usr/lib/DigUp/helper >/dev/null)
+
+rm -rf "$target"
+mkdir -p "$(dirname "$target")"
+mv "$work/squashfs-root/usr/lib/DigUp/helper" "$target"
+echo "Installed DigUp's engine in $target"
