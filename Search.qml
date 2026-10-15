@@ -75,7 +75,7 @@ Item {
     var gen = ++root.generation
     root.showWeaker = false
     meaningTimer.stop()
-    if (!root.query.trim()) {
+    if (!root.query.trim() || (root.codeMode && !root.service.codeEnabled)) {
       root.matchingMeaning = false
       root.answered = false
       root.setHits([], 0)
