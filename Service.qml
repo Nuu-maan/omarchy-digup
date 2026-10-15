@@ -22,14 +22,14 @@ Item {
   property real downloadedBytes: 0
   property real totalBytes: 0
   property int searchable: 0
-  property int total: 0
+  property int pending: 0
   readonly property bool onBattery: UPower.onBattery
 
   readonly property string phase: {
     if (helperMissing) return "missing"
     if (downloader.running) return "downloading"
-    if (onBattery && searchable < total) return "waiting"
-    if (indexer.running && searchable < total) return "indexing"
+    if (onBattery && pending > 0) return "waiting"
+    if (indexer.running && pending > 0) return "indexing"
     return searcher.running ? "ready" : "starting"
   }
   readonly property string status: Model.statusText(root)
@@ -117,9 +117,9 @@ Item {
 
   function refreshCounts() {
     request("status", {}, function(reply) {
-      if (!reply || reply.files === undefined) return
-      root.total = reply.files
+      if (!reply || reply.pending === undefined) return
       root.searchable = reply.searchable
+      root.pending = reply.pending
     })
   }
 
@@ -151,11 +151,12 @@ Item {
     var event = root.parse(line)
     if (!event) return
     if (event.searchable !== undefined) {
-      root.total = event.files
       root.searchable = event.searchable
+      root.pending = event.pending
     }
-    if (event.event === "file" && (event.state === "done" || event.state === "partial")) {
-      root.searchable = Math.min(root.total, root.searchable + 1)
+    if (event.event === "file") {
+      root.pending = Math.max(0, root.pending - 1)
+      if (event.state === "done" || event.state === "partial") root.searchable++
       root._dirty = true
     } else if (event.event === "waiting") {
       root._needsModel = true

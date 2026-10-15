@@ -215,11 +215,11 @@ function statusText(s) {
       ? "Downloading the model · " + Math.floor(100 * s.downloadedBytes / s.totalBytes) + "%"
       : "Downloading the model"
   case "indexing":
-    return s.total > 0
-      ? "Reading files · " + formatCount(s.searchable) + " of " + formatCount(s.total)
+    return s.pending > 0
+      ? "Reading files · " + formatCount(s.searchable) + " of " + formatCount(s.searchable + s.pending)
       : "Looking through your folders"
   case "waiting":
-    return formatCount(s.searchable) + " of " + formatCount(s.total) + " files · the rest when you plug in"
+    return formatCount(s.searchable) + " of " + formatCount(s.searchable + s.pending) + " files · the rest when you plug in"
   case "ready": return formatCount(s.searchable) + (s.searchable === 1 ? " file" : " files")
   default: return "Starting"
   }
