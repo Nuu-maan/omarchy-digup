@@ -204,10 +204,10 @@ function statusText(s) {
       ? "Downloading the model · " + Math.floor(100 * s.downloadedBytes / s.totalBytes) + "%"
       : "Downloading the model"
   case "indexing":
-    return s.indexTotal > 0
-      ? "Reading files · " + formatCount(s.indexDone) + " of " + formatCount(s.indexTotal)
+    return s.total > 0
+      ? "Reading files · " + formatCount(s.searchable) + " of " + formatCount(s.total)
       : "Looking through your folders"
-  case "ready": return formatCount(s.files) + (s.files === 1 ? " file" : " files")
+  case "ready": return formatCount(s.searchable) + (s.searchable === 1 ? " file" : " files")
   default: return "Starting"
   }
 }
@@ -219,7 +219,7 @@ function expandHome(path, home) {
 }
 
 function readConfig(raw, home) {
-  var defaults = ["~/Documents", "~/Pictures", "~/Music", "~/Videos"]
+  var defaults = ["~/Documents", "~/Pictures"]
   var parsed = {}
   try { parsed = JSON.parse(raw || "{}") || {} } catch (e) { parsed = {} }
   var folders = Array.isArray(parsed.folders) ? parsed.folders : defaults
