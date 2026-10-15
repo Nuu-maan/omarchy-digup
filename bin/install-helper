@@ -2,6 +2,7 @@
 set -euo pipefail
 
 version=0.7.0-beta.1
+sha256=1167bb0fafa72f1a1b15b7227947dae63d82d49d679c4197fededbd0b6f2c53b
 url="https://github.com/ARahim3/DigUp/releases/download/v$version/DigUp_${version}_amd64.AppImage"
 target="$HOME/.local/share/digup/helper"
 
@@ -10,6 +11,7 @@ trap 'rm -rf "$work"' EXIT
 
 echo "Downloading DigUp $version"
 curl -fL --progress-bar -o "$work/DigUp.AppImage" "$url"
+echo "$sha256  $work/DigUp.AppImage" | sha256sum --check --quiet
 chmod +x "$work/DigUp.AppImage"
 (cd "$work" && ./DigUp.AppImage --appimage-extract usr/lib/DigUp/helper >/dev/null)
 
