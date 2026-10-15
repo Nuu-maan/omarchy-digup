@@ -36,7 +36,8 @@ Item {
   property string _configKey: ""
   property bool _needsModel: false
   property bool _dirty: false
-  property bool _stopping: false
+  property bool _restartSearcher: false
+  property bool _restartIndexer: false
 
   function search(text, meaning, callback) {
     var query = Model.parseQuery(text)
@@ -91,13 +92,18 @@ Item {
   }
 
   function restart() {
-    root._stopping = searcher.running
-    searcher.running = false
-    indexer.running = false
-    Qt.callLater(function() {
+    if (searcher.running) {
+      root._restartSearcher = true
+      searcher.running = false
+    } else {
       searcher.running = true
+    }
+    if (indexer.running) {
+      root._restartIndexer = true
+      indexer.running = false
+    } else {
       root.startIndexing()
-    })
+    }
   }
 
   function startIndexing() {
@@ -185,9 +191,14 @@ Item {
     stdout: SplitParser { onRead: function(line) { root.handleReply(line) } }
     onExited: function(exitCode) {
       root._callbacks = ({})
-      if (root._stopping) root._stopping = false
-      else if (exitCode === 127) root.helperMissing = true
-      else searcherRestart.restart()
+      if (root._restartSearcher) {
+        root._restartSearcher = false
+        searcher.running = true
+      } else if (exitCode === 127) {
+        root.helperMissing = true
+      } else {
+        searcherRestart.restart()
+      }
     }
   }
 
@@ -197,7 +208,14 @@ Item {
     stdinEnabled: true
     command: [root.digup, "index-service"].concat(root.folders, root.codeArgs(), ["--backfill", "--prune"])
     stdout: SplitParser { onRead: function(line) { root.handleIndexEvent(line) } }
-    onExited: root.indexingFinished()
+    onExited: {
+      if (root._restartIndexer) {
+        root._restartIndexer = false
+        root.startIndexing()
+      } else {
+        root.indexingFinished()
+      }
+    }
   }
 
   Process {
