@@ -515,7 +515,7 @@ Item {
 
                 Text {
                   width: parent.width
-                  text: row.name
+                  text: "\u200e" + row.name
                   color: row.current ? root.selectedText : root.foreground
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.body
@@ -650,7 +650,7 @@ Item {
 
               Text {
                 width: parent.width
-                text: Model.fileName(preview.hit.path)
+                text: "\u200e" + Model.fileName(preview.hit.path)
                 color: root.foreground
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.title
