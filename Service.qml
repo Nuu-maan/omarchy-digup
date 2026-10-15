@@ -147,7 +147,7 @@ Item {
   function handleIndexEvent(line) {
     var event = root.parse(line)
     if (!event) return
-    if (event.files !== undefined) {
+    if (event.searchable !== undefined) {
       root.total = event.files
       root.searchable = event.searchable
     }
