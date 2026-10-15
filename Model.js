@@ -192,6 +192,10 @@ function highlight(text, q, color) {
   return html.replace(pattern, "<span style=\"background-color:" + color + "\">$1</span>")
 }
 
+function excerptHtml(excerpt, color) {
+  return escapeHtml(excerpt).replace(/«([^»]*)»/g, "<span style=\"background-color:" + color + "\">$1</span>")
+}
+
 function statusText(s) {
   switch (s.phase) {
   case "missing": return "DigUp's engine isn't installed"
@@ -233,7 +237,7 @@ if (typeof module !== "undefined") {
     GLYPHS: GLYPHS, parseQuery: parseQuery, formatTime: formatTime, formatCount: formatCount,
     formatSize: formatSize, formatDate: formatDate, fileName: fileName, folderOf: folderOf,
     locLabel: locLabel, reason: reason, metaLine: metaLine, renderKind: renderKind, renderLoc: renderLoc,
-    openLoc: openLoc, groupHits: groupHits, escapeHtml: escapeHtml, highlight: highlight,
+    openLoc: openLoc, groupHits: groupHits, escapeHtml: escapeHtml, highlight: highlight, excerptHtml: excerptHtml,
     statusText: statusText, expandHome: expandHome, readConfig: readConfig, localPath: localPath
   }
 }

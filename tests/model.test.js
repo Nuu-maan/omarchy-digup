@@ -67,6 +67,10 @@ test("highlight escapes html and marks query words", () => {
   assert.ok(html.includes(">clause</span>"))
 })
 
+test("excerptHtml turns DigUp's «marks» into highlights", () => {
+  assert.strictEqual(M.excerptHtml("…not «pets» under <this>", "#ff0"), "…not <span style=\"background-color:#ff0\">pets</span> under &lt;this&gt;")
+})
+
 test("openLoc goes to the defining line for code and the page for pdfs", () => {
   assert.strictEqual(M.openLoc({ kind: "code", loc: 1, loc_end: 47, focus: 8 }), 8)
   assert.strictEqual(M.openLoc({ kind: "pdf", loc: 4 }), 4)
