@@ -750,6 +750,7 @@ Item {
                 : root.codeMode && !root.service.codeEnabled
                   ? "Add your project folders under \"code\" in ~/.config/omarchy/digup.json."
                   : root.service.phase === "indexing" ? "Try again in a minute, or try other words."
+                  : root.service.phase === "waiting" ? "I'll read the rest of your files when you plug in."
                   : "Try other words, or add folders in ~/.config/omarchy/digup.json."
               color: root.muted
               font.family: root.fontFamily

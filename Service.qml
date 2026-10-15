@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.UPower
 import "Model.js" as Model
 
 Item {
@@ -22,10 +23,12 @@ Item {
   property real totalBytes: 0
   property int searchable: 0
   property int total: 0
+  readonly property bool onBattery: UPower.onBattery
 
   readonly property string phase: {
     if (helperMissing) return "missing"
     if (downloader.running) return "downloading"
+    if (onBattery && searchable < total) return "waiting"
     if (indexer.running && searchable < total) return "indexing"
     return searcher.running ? "ready" : "starting"
   }
@@ -202,11 +205,15 @@ Item {
     }
   }
 
-  // ponytail: backfills on battery too; read /sys/class/power_supply and send "backfill off" if it drains laptops.
+  onOnBatteryChanged: {
+    if (indexer.running) indexer.write(onBattery ? "backfill off\n" : "backfill on\n")
+    else if (!onBattery) startIndexing()
+  }
+
   Process {
     id: indexer
     stdinEnabled: true
-    command: [root.digup, "index-service"].concat(root.folders, root.codeArgs(), ["--backfill", "--prune"])
+    command: [root.digup, "index-service"].concat(root.folders, root.codeArgs(), ["--prune"], root.onBattery ? [] : ["--backfill"])
     stdout: SplitParser { onRead: function(line) { root.handleIndexEvent(line) } }
     onExited: {
       if (root._restartIndexer) {

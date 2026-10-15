@@ -92,6 +92,7 @@ test("openLoc goes to the defining line for code and the page for pdfs", () => {
 test("statusText per phase", () => {
   assert.strictEqual(M.statusText({ phase: "ready", searchable: 2140 }), "2,140 files")
   assert.strictEqual(M.statusText({ phase: "indexing", searchable: 312, total: 2140 }), "Reading files · 312 of 2,140")
+  assert.strictEqual(M.statusText({ phase: "waiting", searchable: 312, total: 2140 }), "312 of 2,140 files \u00b7 the rest when you plug in")
   assert.strictEqual(M.statusText({ phase: "downloading", downloadedBytes: 432, totalBytes: 865 }), "Downloading the model · 49%")
 })
 

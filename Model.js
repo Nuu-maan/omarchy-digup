@@ -218,6 +218,8 @@ function statusText(s) {
     return s.total > 0
       ? "Reading files · " + formatCount(s.searchable) + " of " + formatCount(s.total)
       : "Looking through your folders"
+  case "waiting":
+    return formatCount(s.searchable) + " of " + formatCount(s.total) + " files · the rest when you plug in"
   case "ready": return formatCount(s.searchable) + (s.searchable === 1 ? " file" : " files")
   default: return "Starting"
   }
