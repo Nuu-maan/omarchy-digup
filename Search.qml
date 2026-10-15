@@ -224,10 +224,11 @@ Item {
 
   component Chip: Rectangle {
     property alias text: label.text
+    property bool overImage: false
     implicitWidth: label.implicitWidth + Style.space(12)
     implicitHeight: label.implicitHeight + Style.space(4)
     radius: Math.max(0, root.innerRadius - Style.space(4))
-    color: Util.alpha(root.foreground, 0.1)
+    color: overImage ? Util.alpha(root.background, 0.85) : Util.alpha(root.foreground, 0.1)
 
     Text {
       id: label
@@ -594,6 +595,7 @@ Item {
                 x: Math.round((stage.width - previewImage.paintedWidth) / 2) + Style.spacing.lg
                 y: Math.round((stage.height + previewImage.paintedHeight) / 2) - height - Style.spacing.lg
                 text: Model.locLabel(preview.hit)
+                overImage: true
               }
 
               Column {
